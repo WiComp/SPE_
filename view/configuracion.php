@@ -66,7 +66,7 @@
       
         if (isset($_POST['NombreProfesor']) && isset($_POST['ApellidoProfesor']) && isset($_POST['NiuProfesor']) && isset($_POST['Sexo']) && isset($_POST['mail']) && isset($_POST['tel']) && isset($_POST['departamento']) ) {
           print_r($_POST['NombreProfesor']);
-        newProfesor($_POST['NiuProfesor'],$_POST['NombreProfesor'],$_POST['ApellidoProfesor'],$_POST['Sexo'],$_POST['mail'],$_POST['tel'],$_POST['departamento'], $curso);
+        newProfesor($_POST['NiuProfesor'],$_POST['NombreProfesor'],$_POST['ApellidoProfesor'],$_POST['Sexo'],$_POST['mail'],$_POST['tel'],$_POST['departamento'], $curso, $_POST['grau']);
         }
         if (isset($_POST['NombreDep'])) {
           print_r($_POST['NombreDep']);
@@ -78,17 +78,17 @@
     <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#exampleModal" >Añadir nuevo departamento</button></b> </h3> <br><br>-->
 
 <div class="card bg-light">
-    <div class="card-body"><h1 class='text-center'><b>Profesores</b> &emsp;&emsp;&emsp;  <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#exampleModal" >Nou profesor</button> </h1></div>
+    <div class="card-body"><h1 class='text-center'><b>Profesores</b> &emsp;&emsp;&emsp;  <button type="button"  id="nuevoprofe" class="btn btn-primary pull-right" data-toggle="modal" data-target="#exampleModal" >Nou profesor</button> </h1></div>
   </div>
    <br
        <div class = "changeBoxInicial">
         <!-- PUESTOS A HIDDEN PORQUE NO SON NECESARIOS -->
-        <label hidden > Grado: </label>
-         <select hidden id="gradosAjax" class="selectpicker form-control" id="profesores" name="NiuProfesor" required = "true">
+        <label  > Grado: </label>
+         <select  id="gradosAjax" class="selectpicker form-control" id="profesores" name="NiuProfesor" required = "true">
             <?php
             $gradosAll =  getGrados();
             //var_dump($gradosAll);
-            print_r("<option value=" . "Todos" . ">" .  "Todos" . "</option>");
+            //print_r("<option value=" . "Todos" . ">" .  "Todos" . "</option>");
             foreach($gradosAll as $gr){
              // print_r($profesor);
              // print_r("HOLA " .  $profesor['Nombre']);
@@ -97,11 +97,11 @@
            print_r("<br><br>");   
             ?>
            </select> <br>
-          <label for="depAjax">Departamento: </label>
-            <select id="depAjax" class="selectpicker form-control" id="profesores" name="NiuProfesor" required = "true">
+          <label hidden for="depAjax">Departamento: </label>
+            <select hidden id="depAjax" class="selectpicker form-control" id="profesores" name="NiuProfesor" required = "true">
             <?php
             $departamentosAll =  getDepartamentos();
-            print_r("<option value=" . "Todos" . ">" .  "Todos" . "</option>");
+            //print_r("<option value=" . "Todos" . ">" .  "Todos" . "</option>");
             foreach($departamentosAll as $dep){
              // print_r($profesor);
              // print_r("HOLA " .  $profesor['Nombre']);
@@ -119,6 +119,7 @@
 <?php 
       //$tableEstancias = ajaxTable();
     ?>
+<div id = "todo" >
   <div id="estancias" class="container ">           
   <table id="tableProf" class="table  text-center table-striped table-responsive table-sm">
     <thead class="table-bordered" >
@@ -129,8 +130,9 @@
         print_r("<th> Nombre </th>");
         print_r("<th> Departamento </th>");
         print_r("<th> Alumnos asignados");
-        print_r("<th> Máximo alumnos");
-        print_r("<th hidden> Editar")
+        print_r("<th> Máximo alumnos    ");
+        print_r("<th hidden> Editar");  
+        print_r("<th hidden> ")
         /*<th>Nombre</th>
         <th>Contacto Inicial</th>
         <th>1º Seg estudiante</th>
@@ -146,7 +148,7 @@
     <tbody id="bodyTable">
      <?php  
       
-      $profesoresNuevaEstancia = ajaxTableProfesores();
+      $profesoresNuevaEstancia = ajaxTableProfesores($cursoActual);
       //print_r($profesoresNuevaEstancia);
       foreach($profesoresNuevaEstancia as $profesor){
          print_r('<tr>');
@@ -155,16 +157,18 @@
             ?><td class="table-light"><?php print_r($profesor['Nombre'] . " ". $profesor['Apellidos'] ."</td>");
             $departamento = getDepartamentosProfesor($profesor['NIU']);
             //print_r($departamento);
-            $numAlumnos = getAlumnosAsignadosProfesor($profesor['NIU']);
+            $numAlumnos = getAlumnosAsignadosProfesor($profesor['NIU'], $cursoActual);
             //print_r($numAlumnos);
             //print_r($departamento[0]['Departamento'])?>
             <td class="table-light"><?php print_r($departamento['Departamento'] .  "</td>");?>
             <td class="table-light"><?php print_r($numAlumnos['numAlumnos'] .  "</td>");?>
             
-            <td class="table-light"><?php $maxalumnos = getMaxEstProfesor($profesor['NIU']); print_r($maxalumnos['num_max_alum'] .  "</td>");?>
-            <td class="table-light"><?php  print_r('<button class="btn btn-link" data-toggle="modal" data-target="#myModal"><i class="fa fa-edit"></i></button>' .  "</td>");
+            <td class="table-light" contenteditable="true" id="editableProf"><?php $maxalumnos = getMaxEstProfesor($profesor['NIU']); print_r($maxalumnos['num_max_alum'] . "&nbsp;&nbsp;&nbsp;<i class='fa fa-edit'></i></button>" .  "</td>");?>
+            <td class="table-light" hidden  id="NIU_Profesor"><?php print_r($profesor['NIU'] .  "</td>");?>
+            <td class="table-light"><?php  print_r('<button id="exampleProfe" class="btn btn-link" data-toggle="modal" data-target="#exampleModalProfe"><i class="fa fa-edit"></i></button>' .  "</td>");
 
            print_r('</tr>'); 
+
              //print_r("<option value=" . $profesor['NIU'] . ">" .  $profesor['Nombre'] . " " .  $profesor['Apellidos'] . "</option>");
       }?>
             
@@ -182,8 +186,8 @@ aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title text-center" id="myModalLabel">Edit</h4>
-                <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true" class="">×   </span><span class="sr-only">Close</span>
+              <h4 class="modal-title text-center" id="myModalLabel">Editar  </h4>
+                <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true" class="">×   </span><span class="sr-only">Tancar</span>
 
                 </button>
                  
@@ -191,8 +195,8 @@ aria-hidden="true">
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tancar</button>
+                <button type="button" class="btn btn-primary">Guardar canvis</button>
             </div>
         </div>
     </div>
@@ -242,7 +246,7 @@ aria-hidden="true">
             //print_r($numAlumnos);
             //print_r($departamento[0]['Departamento'])?>
             <td data-editable="false" class="table-light"><?php print_r($dep['acronimo'] .  "</td>");?>
-            <td id=<?php print_r('\'' . 'change'. $i . '\'')?> class="uneditable table-light"><?php print_r($numAlumnos['numAlumnos'] . "</td>");
+            <td id=<?php print_r('\'' . 'change'. $i . '\'')?> class="uneditable table-light"><?php print_r(getAlumnosAsignadosDepartamento($dep['acronimo'], $cursoActual) . "</td>");
             
            $i++;
            print_r('</tr>'); 
@@ -253,7 +257,7 @@ aria-hidden="true">
   </table>
 
 </div><br>
- <h4> ¿Qué desea añadir? <br><br> <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#exampleModal" >Añadir nuevo profesor</button> </h3> <br><br>
+ <h4> ¿Qué desea añadir? <br><br> <button id='newProfe' type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#exampleModal" >Añadir nuevo profesor</button> </h3> <br><br>
     <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#exampleModal1" >Añadir nuevo departamento</button></b> </h3> <br><br>
     <a href="index.php?id=1" class="btn btn-primary pull-left" >Añadir nuevo curso</a>
    
@@ -269,7 +273,62 @@ aria-hidden="true">
         </button>
       </div>
       <div class="modal-body" >
-        <form id="formEstancias" action = "index.php?id=3" method="post">
+        <form id="formProfesores" action = "index.php?id=3" method="post">
+          <div class = "container">
+           <label><b> Nombre Profesor</b> </label><br>
+           <input type="text" class="form-control" name="NombreProfesor" required="true" ></input><br>
+           <label><b> Apellido Profesor</b> </label><br>
+           <input type="text" class="form-control" name="ApellidoProfesor" required="true" ></input><br>
+           <label><b> NIU Profesor</b> </label><br>
+           <input type="text" class="form-control" name="NiuProfesor" required="true" ></input><br>
+           <label><b> Sexo</b> </label><br>
+           <select id="depAjax" class="selectpicker form-control" id="Sexo" name="Sexo" required = "true">
+            <?php
+            print_r("<option value=" . 'H' . ">" . 'H' . "</option>");
+            print_r("<option value=" . 'F' . ">" . 'F' . "</option>");
+            ?>
+           </select><br>
+           <label><b> E-mail</b> </label><br>
+           <input type="text" class="form-control" name="mail" required="true"></input><br>
+           <label><b> Telefono</b> </label><br>
+           <input type="textbox" class="form-control" name="tel" required="true"></input><br>
+           <label><b> Departamento</b> </label><br>
+            <select id="depAjax" class="selectpicker form-control" id="departamento" name="departamento" required = "true">
+            <?php
+            //print_r("<option value=" . "Todos" . ">" .  "Todos" . "</option>");
+            foreach($departamentosAll as $dep){
+             // print_r($profesor);
+             // print_r("HOLA " .  $profesor['Nombre']);
+              print_r("<option value=" . $dep['acronimo'] . ">" .  $dep['acronimo'] . "</option>");
+            }
+           print_r("<br><br>");   
+            ?>
+          </select><br>
+           <input id="grau" type="textbox" class="form-control" name="grau" required="true"></input><br>
+          <button id="reload"type="submit" class="form-control btn btn-primary">Añadir</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nueva estancia</h5>
+        
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" >
+        <form id="formDepartamentos" action = "index.php?id=3" method="post">
           <div class = "container">
            <label><b> Nombre Profesor</b> </label><br>
            <input type="text" class="form-control" name="NombreProfesor" required="true" ></input><br>
@@ -310,6 +369,11 @@ aria-hidden="true">
     </div>
   </div>
 </div>
+
+
+
+
+
 <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -353,9 +417,202 @@ aria-hidden="true">
   </div>
 </div>
 
-<script>
 
-$(".btn[data-target='#myModal']").click(function() {
+
+
+<div class="modal fade" id="exampleModalProfe" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nueva estancia</h5>
+        
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" >
+        <form id="formEstancias" action = "index.php?id=3" method="post">
+          <div class = "container">
+           <label><b> Nombre Departamento</b> </label><br>
+           <input type="text" class="form-control" name="NombreDep" required="true" ></input><br>
+           <label><b> Acronimo</b> </label><br>
+           <input type="text" class="form-control" name="AcronimoDep" required="true" ></input><br>
+           <label><b> Grado</b> </label><br>
+           
+           <label><b> Identificador</b> </label><br>
+           <input type="text" class="form-control" name="idDep" required="true" ></input><br>
+          <button id="reload"type="submit" class="form-control btn btn-primary">Añadir</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+</h4>
+
+</div>
+<script>
+$(document).ready(function(){
+  var grado = $('#gradosAjax').val();
+  $('#grau').val(grado);
+})
+$('#formProfesores').submit(function(e){
+
+  e.preventDefault();
+  var form = $(this);
+  var url = form.attr('action');
+  $('#exampleModal').modal('hide');
+  $.ajax({
+           type: "POST",
+           url: url,
+           data: form.serialize(), // serializes the form's elements.
+           success: function(response)
+           {
+             // $('#tableProf').replaceWith($('#tableProf',response));
+              ///console.log(response);
+           }
+
+         });
+var valor = $('#gradosAjax').val();
+$.post("index.php?id=3",
+       {grado: valor},
+       function(response){
+        console.log(response);
+         table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
+        /// var result = $('<div />').append(response).find('#estancias').html();
+       //  alert(result);
+         $('#tableProf').replaceWith($('#tableProf',response));
+         console.log(response)
+         //$('#exampleModal').replaceWith($('#exampleModal',response));
+         
+         table = DataTableFunction();
+
+
+         $('[contenteditable=true]').focus(function() {
+        $(this).data("initialText", $(this).html());
+        $(this).on('blur', function(event){
+
+          var max = event.target.textContent;
+          var niu = $(event.target).closest('tr').find('#NIU_Profesor').text()
+          alert(event.target.textContent); // TEXO NUEVO
+          alert($(event.target).closest('tr').find('#NIU_Profesor').text()); // NIU PROFESOR
+          alert(max); 
+          alert(niu);
+
+          $.post("index.php?id=3",
+          {max1: max, niu1: niu },
+          function(response){
+
+              console.log(response);
+    //  console.log(response);
+        // table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
+         //$('#tableProf').replaceWith($('#tableProf',response));
+         //table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
+         //console.log(response);
+        // var result = $('<div />').append(response).find('#estancias').html();
+        //alert(result);
+        //$('#estancias').html(response + '#estancias');     
+       }
+    );
+
+
+
+
+
+    //alert($(event.target).closest('tr').find('.model').text());
+      })
+});
+    // 
+
+
+
+
+
+         
+
+      });
+
+
+})
+// PARA EDITAR
+$('[contenteditable=true]').focus(function() {
+        $(this).data("initialText", $(this).html());
+        $(this).on('blur', function(event){
+
+          var max = event.target.textContent;
+          var niu = $(event.target).closest('tr').find('#NIU_Profesor').text()
+          alert(event.target.textContent); // TEXO NUEVO
+          alert($(event.target).closest('tr').find('#NIU_Profesor').text()); // NIU PROFESOR
+          alert(max); 
+          alert(niu);
+
+          $.post("index.php?id=3",
+          {max1: max, niu1: niu },
+          function(response){
+
+              console.log(response);
+    //  console.log(response);
+        // table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
+         //$('#tableProf').replaceWith($('#tableProf',response));
+         //table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
+         //console.log(response);
+        // var result = $('<div />').append(response).find('#estancias').html();
+        //alert(result);
+        //$('#estancias').html(response + '#estancias');     
+       }
+    );
+
+
+
+
+
+    //alert($(event.target).closest('tr').find('.model').text());
+      })
+});
+    // When you leave an item...
+
+
+
+
+
+
+
+
+
+/*//var contents = $('#editableProf').html();
+$('#editableProf').on('blur', function(event){
+    alert(event.target.textContent); // TEXO NUEVO
+    alert($(event.target).closest('tr').find('#NIU_Profesor').text()); // NIU PROFESOR
+    //alert($(event.target).closest('tr').find('.model').text());
+})
+/*$('#editableProf').blur(function() {
+    if (contents!=$(this).html()){
+  alert('Handler for .change() called.');
+        contents = $(this).html();
+       alert(contents.closest('tr').text());
+    }
+});*/
+if($('#exampleModal').hasClass('show')){
+
+
+}
+
+
+/*$('#nuevoprofe').click(function(){
+  alert("CLICKED");
+  var htmlModal =  $('#exampleModal').html();
+  alert(htmlModal);
+  $('.modal-body').html(htmlModal);
+  //$('#exampleModal').modal('show');
+
+  //$('.modal-body').html();
+})
+*/
+
+/*$(".btn[data-target='#myModal']").click(function() {
        var columnHeadings = $("thead th").map(function() {
                  return $(this).text();
               }).get();
@@ -364,14 +621,31 @@ $(".btn[data-target='#myModal']").click(function() {
                  return $(this).text();
        }).get();
   var modalBody = $('<div id="modalContent"></div>');
-  var modalForm = $('<form role="form" name="modalForm" action="putYourPHPActionHere.php" method="post"></form>');
+  var modalForm = $('<form role="form" id="modalForm" name="modalForm" action="index.php?id=3" method="post"></form>');
   var i = 0; 
   $.each(columnHeadings, function(i, columnHeader) {
+        if(( i == 0) || (i > 2 && i < 5)){
        var formGroup = $('<div class="form-group"></div>');
-       formGroup.append('<label for="'+columnHeader+'">'+ '<b>' +columnHeader+'<b></label>');
+       if(i != 4){
+         formGroup.append('<label for="'+columnHeader+'">'+ '<b>' +columnHeader+'<b></label>');
+       }
+      
+       if(i == 0){
 
-       formGroup.append('<input class="form-control" name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
-       if(i < 4){
+        formGroup.append('<input id="prof" readonly class="form-control"  name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
+
+        
+       }else{
+        if(i == 4){
+            formGroup.append('<input hidden id="niu" class="form-control"  name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
+        }else{
+            formGroup.append('<input id="max" class="form-control"  name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
+        }
+         
+       }
+
+      // formGroup.append('<label  id="row" for="'+columnHeader+i+'">'+ '<b>' +columnHeader+i+'<b></label>')
+
           modalForm.append(formGroup);
        }
      
@@ -381,10 +655,31 @@ $(".btn[data-target='#myModal']").click(function() {
   $('.modal-body').html(modalBody);
 });
 $('.modal-footer .btn-primary').click(function() {
-   $('form[name="modalForm"]').submit();
+    $('#myModal').modal('hide');
+   var max =  $('#max').val();
+   var niu = $('#niu').val()
+   //alert($('#max').val());
+  // alert($('#prof').val());
+   //alert($('#niu').val());
+   //alert('OK');
+
+    $.post("index.php?id=3",
+       {max1: max, niu1: niu },
+       function(response){
+    //  console.log(response);
+        // table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
+         $('#tableProf').replaceWith($('#tableProf',response));
+         //table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
+         console.log(response);
+                /*var result = $('<div />').append(response).find('#estancias').html();
+        alert(result);
+        $('#estancias').html(response + '#estancias');     
+       }
+    );
+
 });
 
-
+*/
 
 
 
@@ -416,6 +711,7 @@ function DataTableFunction(){
        }
     } );
 }
+
 function DataTableFunction1(){
      return $('#tableDep').DataTable( {
        language: {
@@ -428,7 +724,7 @@ var table =DataTableFunction();
 var table1 = DataTableFunction1();
 
 
-$('#depAjax').change(function(){
+/*$('#depAjax').change(function(){
    
     //alert();
     let valor = $(this).val();
@@ -447,11 +743,11 @@ $('#depAjax').change(function(){
        function(response){
        // console.log(response);
          table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
-         $('#estancias').replaceWith($('#estancias',response));
+         $('#tableProf').replaceWith($('#tableProf',response));
          table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
                 /*var result = $('<div />').append(response).find('#estancias').html();
         alert(result);
-        $('#estancias').html(response + '#estancias');     */ 
+        $('#estancias').html(response + '#estancias');     
        }
     );
 
@@ -466,32 +762,129 @@ $('#depAjax').change(function(){
          table = DataTableFunction();
         /*var result = $('<div />').append(response).find('#estancias').html();
         alert(result);
-        $('#estancias').html(response + '#estancias');     */ 
+        $('#estancias').html(response + '#estancias');     
        }
     );
 }
     //$('#tableProf').DataTable().ajax.reload()
 
-  });
+  });*/
 
 $('#gradosAjax').change(function(){
    
-    //alert();
+     var grado = $('#gradosAjax').val();
+     $('#grau').val(grado);
+  //  alert();
     let valor = $(this).val();
     //console.log(valor);
-   //alert(valor);
+ //alert(valor);
 
     $.post("index.php?id=3",
        {grado: valor},
        function(response){
         console.log(response);
          table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
-         $('#estancias').replaceWith($('#estancias',response));
-         table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
-                /*var result = $('<div />').append(response).find('#estancias').html();
-        alert(result);
-        $('#estancias').html(response + '#estancias');     */ 
+        /// var result = $('<div />').append(response).find('#estancias').html();
+       //  alert(result);
+         $('#tableProf').replaceWith($('#tableProf',response));
+         //$('#exampleModal').replaceWith($('#exampleModal',response));
+         
+         table = DataTableFunction();
+
+         $('[contenteditable=true]').focus(function() {
+        $(this).data("initialText", $(this).html());
+        $(this).on('blur', function(event){
+
+          var max = event.target.textContent;
+          var niu = $(event.target).closest('tr').find('#NIU_Profesor').text()
+          alert(event.target.textContent); // TEXO NUEVO
+          alert($(event.target).closest('tr').find('#NIU_Profesor').text()); // NIU PROFESOR
+          alert(max); 
+          alert(niu);
+
+          $.post("index.php?id=3",
+          {max1: max, niu1: niu },
+          function(response){
+
+              console.log(response);
+    //  console.log(response);
+        // table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
+         //$('#tableProf').replaceWith($('#tableProf',response));
+         //table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
+         //console.log(response);
+        // var result = $('<div />').append(response).find('#estancias').html();
+        //alert(result);
+        //$('#estancias').html(response + '#estancias');     
        }
+    );
+
+
+
+
+
+    //alert($(event.target).closest('tr').find('.model').text());
+      })
+});
+
+
+       /*  $(".btn[data-target='#myModal']").click(function() {
+
+          alert($('#myModal').val());
+       var columnHeadings = $("thead th").map(function() {
+                 return $(this).text();
+              }).get();
+       columnHeadings.pop();
+       var columnValues = $(this).parent().siblings().map(function() {
+                 return $(this).text();
+       }).get();
+  var modalBody = $('<div id="modalContent"></div>');
+  var modalForm = $('<form role="form" id="modalForm" name="modalForm" action="index.php?id=3" method="post"></form>');
+  var i = 0; 
+  $.each(columnHeadings, function(i, columnHeader) {
+        if(( i == 0) || (i > 2 && i < 5)){
+       var formGroup = $('<div class="form-group"></div>');
+       if(i != 4){
+         formGroup.append('<label for="'+columnHeader+'">'+ '<b>' +columnHeader+'<b></label>');
+       }
+      
+       if(i == 0){
+
+        formGroup.append('<input id="prof" readonly class="form-control"  name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
+
+        
+       }else{
+        if(i == 4){
+            formGroup.append('<input hidden id="niu" class="form-control"  name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
+        }else{
+            formGroup.append('<input id="max" class="form-control"  name="'+columnHeader+i+'" id="'+columnHeader+i+'" value="'+columnValues[i]+'" />'); 
+        }
+         
+       }
+
+      // formGroup.append('<label  id="row" for="'+columnHeader+i+'">'+ '<b>' +columnHeader+i+'<b></label>')
+
+          modalForm.append(formGroup);
+       }
+     
+
+  });
+  modalBody.append(modalForm);
+  $(' #myModal .modal-body').html(modalBody);
+});*/
+
+
+ 
+ 
+
+
+
+
+         //volvemos a crear la tabla ahora que hemos creado datos 
+         //alert("DONE");     /*var result = $('<div />').append(response).find('#estancias').html();
+        //alert(result);
+        //$('#tableProf').html(response + '#tableProf');     
+       }
+
     );
 
 
@@ -500,7 +893,7 @@ $('#gradosAjax').change(function(){
 
 
 
-$('.alert').alert()
+//$('.alert').alert()
 
 
 

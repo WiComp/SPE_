@@ -45,7 +45,7 @@ switch ($variable) {
 			$variable = $_POST['name'];
 		}
 		//$tableEstancias = tableEstanciasNombres('ALL');
-		$profesoresNuevaEstancia = getProfesores('Todos');
+		$profesoresNuevaEstancia = ajaxTableProfesores($cursoActual);
 		$cursos = getCursos();
 		//print_r($profesoresNuevaEstancia);
 		require("/../view/estanciastodas.php");
@@ -53,6 +53,16 @@ switch ($variable) {
 	case '3':
 		//if(isset($_POST['name'])){print_r($_POST['name']);}
 		  //	require_once("/../model/conexion.php");
+
+			if(isset($_POST['max1']) && isset($_POST['niu1']) ){
+				print_r("HE ENTRADO EN FUNCION");
+				print_r($_POST['max1']);
+				print_r($_POST['niu1']);
+
+				setMaxAlumn($_POST['max1'], $_POST['niu1'], $cursoActual);
+
+			}
+
 		   	$InfoAlumno = getAlumno('1459586');
 			$numEstanciasRevisar = getNumEstancias();
 			//$fechas = calcDates();

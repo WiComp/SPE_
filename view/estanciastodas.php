@@ -89,7 +89,7 @@
       // cambia grado y en curso OFF. 
       if(isset($_POST['name1'])){ // si ha cambiado algun check
         $all = $_POST['name1']; 
-
+        
       ///print_r("HOLA");
          //print_r($backUpChange);
         $tableEstancias = ajaxTableEstancias($grado, $all, $cursoActual);
@@ -106,6 +106,7 @@
          print_r('HE LLAMADO A LA FUNCION');
           //gradoToEstancia(0);
          print_r(newEstancia($_POST['NombreAlumno'],$_POST['ApellidoAlumno'],$_POST['NiuAlumno'],$_POST['NiuProfesor'],$_POST['FechaInicio'],$_POST['FechaFin'],$_POST['Horas'], $_POST['curso_estancia'], $_POST['gradoNewEstancia']));
+         
         }
         if($errorConsulta == 'ERROR'){
           print_r("IF");
@@ -575,6 +576,7 @@ $('#gradosEstancias').change(function(){
     //  console.log(response);
          table.destroy();//Destrozamos la tabla para volver a iniciarla una vez hemos cambiado los datos
          $('#estancias').replaceWith($('#estancias',response));
+         $('#profesores').replaceWith($('#profesores',response));
          table = DataTableFunction();//volvemos a crear la tabla ahora que hemos creado datos 
          console.log(response);
                 /*var result = $('<div />').append(response).find('#estancias').html();
